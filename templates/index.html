@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>DATA</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f2f2f2;
+        }
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        p {
+            font-size: 18px;
+            color: #555;
+            margin-bottom: 10px;
+        }
+        .icon {
+            display: inline-block;
+            width: 50px;
+            height: 50px;
+            background-repeat: no-repeat;
+            background-size: contain;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        #myChart {
+            display: block;
+            margin: 0 auto;
+            width: 800px;
+            height: 400px;
+        }
+        .temperature-icon {
+            background-image: url('temperature-icon.png');
+        }
+        .humidity-icon {
+            background-image: url('humidity-icon.png');
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <script>
+    fetch('../data.json')
+      .then(response => response.json())
+      .then(data => {
+        const labels = data.map(obj => obj.time);
+        const tempData = data.map(obj => obj.temperature);
+        const humData = data.map(obj => obj.humidity);
+
+        const ctx = document.getElementById('myChart').getContext('2d');
+        const chart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [
+                {
+                    label: 'Temperature',
+                    data: tempData,
+                    fill: false,
+                    borderColor: 'rgb(255, 99, 132)',
+                    tension: 0.1
+                },
+                {
+                    label: 'Humidity',
+                    data: humData,
+                    fill: false,
+                    borderColor: 'rgb(54, 162, 235)',
+                    tension: 0.1
+                }
+                ]
+            },
+            options: {
+                scales: {
+                x: {
+                    type: 'time',
+                    
+                    time: {
+                    parser: 'yyyy-MM-dd HH:mm:ss.SSSSSS',
+                    tooltipFormat: 'l\l HH:mm:ss.SSS',
+                    unit: 'second',
+                    round: 'second',
+                    displayFormats: {
+                        second: 'HH:mm:ss'
+                    }
+                    },
+                    ticks: {
+                    source: 'auto'
+                    }
+                }
+                }
+            }
+        });
+      })
+      .catch(error => console.error(error));
+    </script>
+</head>
+<body>
+    <h1>DATA</h1>
+    <p><span class="icon temperature-icon"></span>Temperature: {{ temperature }} C</p>
+    <p><span class="icon humidity-icon"></span>Humidity: {{ humidity }} %</p>
+    <p>Last Updated: {{ current_time }}</p>
+    <canvas id="myChart"></canvas>
+</body>
+</html>
