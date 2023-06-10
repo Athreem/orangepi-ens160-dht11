@@ -58,17 +58,18 @@ def main():
             oled.oled_draw(dht11, ens160)
             time.sleep(4.0)
 
+def run_flask_app():
+    socketio.run(app, host='0.0.0.0', port=8080, debug=True, use_reloader=False)
+
 if __name__ == '__main__':
-    
     if len(sys.argv) > 1:
         argument = sys.argv[1]
         if argument == '-web':
             print('Запуск с web интерфейсом')
-            web_thread = threading.Thread(target=socketio.run, args=(app,), kwargs={'host': '0.0.0.0', 'port': 8080, 'debug': True})
+            web_thread = threading.Thread(target=run_flask_app)
             web_thread.start()
         else:
             print('Запуск не удался, неверный аргумент')
-
 
     # Получение данных с датчика DHT11
     threading.Thread(target=oled.loading).start()
